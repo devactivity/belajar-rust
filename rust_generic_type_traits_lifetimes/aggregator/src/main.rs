@@ -1,4 +1,4 @@
-use aggregator::{Summary, Tweet, NewsArticle, notify};
+use aggregator::{Summary, Tweet, NewsArticle, notify, Pair};
 
 fn main() {
     let tweet = Tweet {
@@ -18,7 +18,13 @@ fn main() {
     };
     // println!("New article available: {}", article.summarize())
 
-    println!("{:?}", notify(&tweet));
+    // println!("{:?}", notify(&tweet));
+
+    let p = Pair::new(2, 6);
+    println!("{:?}", p.cmp_display());
+
+    let s = 3.to_string();
+
 
 }
 

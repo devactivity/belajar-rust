@@ -43,3 +43,75 @@ impl Summary for Tweet {
 pub fn notify(item: &impl Summary) -> String { // impl Trait syntax (trait as parameter)
     format!("Breaking news! {}", item.summarize())
 }
+
+// pub fn notify2<T: Summary>(item: &T) {
+//     println!("Breaking news! {}", item.summarize());
+// }
+
+// pub fn notify3(item1: &impl Summary, item2: &impl Summary) {} // utk yg mengimplementasi Summary trait saja
+
+// pub fn notify4<T: Summary>(item1: &T, item2: &T) {} // utk tipe yg sama (trait bound)
+
+use std::fmt::Display;
+
+// pub fn notify(item: &(impl Summary + Display)) {}
+// pub fn notify<T: Summary + Display>(item: &T) {}
+
+// fn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {}
+
+// fn some_function<T, U>(t: &T, u: &u) -> i32
+//     where T: Display + Clone,
+//           U: Clone + Debug
+// {
+//     // do something here
+// }
+
+// closures dan iterator (chapter 13)
+fn return_summarizable1() -> impl Summary {
+    Tweet {
+        username: String::from("rust_lang"),
+        content: String::from("lorem ipsum"),
+        reply: false,
+        retweet: false
+    }
+}
+// fn return_summarizable(switch: bool) -> impl Summary {
+//     if switch {
+//         NewsArticle {
+//             headline: String::from("News headline"),
+//             location: String::from("Los Angeles"),
+//             author: String::from("rust_lang"),
+//             content: String::from("lorem ipsum"),
+//         }
+//     } else {
+//         Tweet {
+//             username: String::from("rust_lang"),
+//             content: String::from("lorem ipsum"),
+//             reply: false,
+//             retweet: false,
+//         }
+//     }
+// }
+
+pub struct Pair<T> {
+    pub x: T,
+    pub y: T
+}
+
+impl<T> Pair<T> {
+    pub fn new(x: T, y: T) -> Self {
+        Self {x,y}
+    }
+}
+
+impl<T: Display + std::cmp::PartialOrd> Pair<T> {
+    pub fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("The largest member is x = {}", self.x);
+        } else {
+            println!("The largest member is y = {}", self.y);
+        }
+    }
+}
+
+// `blanket implementation` ada dibagian `implementors` section

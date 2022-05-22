@@ -1,4 +1,4 @@
-// Fix this after Trait section
+// Fix this after Trait section (YouTube: Belajar Rust #10.4 - Traits di Rust (Bagian 2))
 // ----------------------------
 // fn main() {
 //     let number_list = vec![34, 50, 250, 100, 65];
