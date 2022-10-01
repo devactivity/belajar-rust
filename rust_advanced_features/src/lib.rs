@@ -1,41 +1,14 @@
-// Specifying Placeholder Types in Trait Definitions with Associated Types
-// ================================================================
-pub trait Iterator {
-    type Item;
+use std::collections::HashMap;
 
-    fn next(&mut self) -> Option<Self::Item>;
-}
+#[derive(Debug)]
+pub struct People(HashMap<i32, String>);
 
-struct Counter {}
-
-impl Iterator for Counter {
-    type Item = u32;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        Some(50)
+impl People {
+    pub fn new() -> People {
+        People(HashMap::new())
     }
-}
 
-impl Iterator for Counter {
-    type Item = u8;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        Some(50)
-    }
-}
-
-pub trait Iterator<T> {
-    fn next(&mut self) -> Option<T>;
-}
-
-impl Iterator<u32> for Counter {
-    fn next(&mut self) -> Option<u32> {
-        Some(50)
-    }
-}
-
-impl Iterator<u8> for Counter {
-    fn next(&mut self) -> Option<u8> {
-        Some(50)
+    pub fn add_name(&mut self, name: &str) {
+        self.0.insert(1, name.to_string());
     }
 }

@@ -1,166 +1,86 @@
-// Default Generic Type Parameters and Operator Overloading
-// ================================================================
-use std::ops::Add;
-
-#[derive(Debug, Copy, Clone, PartialEq)]
-struct Point {
-    x: i32,
-    y: i32,
-}
-
-impl Add for Point {
-    type Output = Point;
-
-    fn add(self, other: Self) -> Point {
-        Point { x: self.x + other.x, y: self.y + other.y }
-    }
-}
-
-struct Millimeters(u32);
-struct Meters(u32);
-
-impl Add<Meters> for Millimeters {
-    type Output = Millimeters;
-
-    fn add(self, other: Meters) -> Millimeters {
-        Millimeters(self.0 + (other.0 * 1000))
-    }
-}
-
-// trait Add<Rhs=Self> { // right hand side
-//     type Output;
-
-//     fn add(self, rhs: Rhs) -> Self::Output;
-// }
+// Using the Newtype Pattern for Type Safety and Abstraction
+// =========================================================
+use rust_advanced_features::People;
 
 fn main() {
-    assert_eq!(
-        Point {x: 1, y:0} + Point {x:2, y:3},
-        Point {x: 3, y:3}
-    );
+    let mut p = People::new();
+    p.add_name("RustLang");
+
+    println!("{:?}", p);
 }
 
+// Creating Type Synonyms with Type Aliases
+// =========================================================
+fn main() {
+    type Kilometers = i32;
 
+    let x: i32 = 5;
+    let y: Kilometers = 5;
 
-// Fully Qualified Syntax for Disambiguation: Calling Methods with the Same Name
-// ================================================================
-trait Pilot {
-    fn fly(&self);
-}
-trait Wizard {
-    fn fly(&self);
-}
+    println!("x + y = {}", x + y);
 
-struct Human;
+    type MyType = Box<dyn Fn() + Send + 'static>;
 
-impl Pilot for Human {
-    fn fly(&self) {
-        println!("This is you captain speaking.");
+    let f: MyType  = Box::new(|| println!("tes"));
+
+    fn takes_long_type(f: MyType) {}
+
+    fn returns_long_type() -> MyType {
+        Box::new(|| ())
     }
-}
 
-impl Wizard for Human {
-    fn fly(&self) {
-        println!("Up.");
+
+    use std::fmt;
+
+    type Result<T> = std::result::Result<T, std::io::Error>;
+
+    pub trait Write {
+        fn write(&mut self, buf: &[u8]) -> Result<usize>;
+        fn flush(&mut self) -> Result<()>;
+
+        fn write_all(&mut self, buf: &[u8]) -> Result<()>;
+        fn write_fmt(&mut self, fmt: fmt::Arguments) -> Result<()>;
     }
+
+
 }
 
-impl Human {
-    fn fly(&self) {
-        println!("Waving arms furiously");
+// The Never Type that Never Returns
+// =========================================================
+fn bar() -> ! { // diverging function
+    panic!();
+}
+
+enum Option<T> {
+    Some(T),
+    None,
+}
+
+use crate::Option::*;
+
+impl<T> Option<T> {
+    pub fn unwrap(self) -> T {
+        match self {
+            Some(val) => val,
+            None => panic!("calledd Option::unwrap() on a None value")
+        }
     }
 }
 
 fn main() {
-    let person = Human;
-
-    Pilot::fly(&person);
-    Wizard::fly(&person);
-    person.fly(); // or Human::fly(&person)
-}
-
-
-trait Animal {
-    fn baby_name() -> String;
-}
-
-struct Dog;
-
-impl Dog {
-    fn baby_name() -> String {
-        String::from("Spot")
+    print!("forever");
+    loop {
+        print!("infinite");
+        break;
     }
 }
 
-impl Animal for Dog {
-    fn baby_name() -> String {
-        String::from("puppy")
-    }
-}
-
+// Dynamically Sized Types and the Sized Trait
+// =========================================================
 fn main() {
-    println!("A baby dog is called a {}", <Dog as Animal>::baby_name()); // fully qualified syntax
-}
+    let s1: &str = "hello world";
+    let s2: &str = "hello rust";
 
-
-
-
-// Using Supertraits to Require One Trait’s Functionality Within Another Trait
-// ================================================================
-use std::fmt;
-
-trait OutlinePrint: fmt::Display {
-    fn outline_print(&self) {
-        let output = self.to_string();
-        let len = output.len();
-
-        println!("{}", "*".repeat(len + 4));
-        println!("*{}*", " ".repeat(len + 2));
-        println!("* {} *", output);
-        println!("*{}*", " ".repeat(len + 2));
-        println!("{}", "*".repeat(len + 4));
-    }
-}
-
-#[derive(Debug, Copy, Clone, PartialEq)]
-struct Point {
-    x: i32,
-    y: i32,
-}
-
-impl OutlinePrint for Point {}
-
-impl fmt::Display for Point {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}, {})", self.x, self.y)
-    }
-}
-
-fn main() {
-    let p = Point {x: 1, y: 3};
-    p.outline_print();
-}
-
-
-// Using the Newtype Pattern to Implement External Traits on External Types
-// ================================================================
-use std::fmt;
-
-struct Wrapper(Vec<String>);
-
-impl fmt::Display for Wrapper {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[{}]", self.0.join(", "))
-    }
-}
-
-fn main() {
-    let w = Wrapper(
-        vec![
-            String::from("hello"),
-            String::from("world"),
-        ]
-    );
-
-    println!("w = {}", w);
+    fn generic<T>(t: T) {} // from this
+    fn generic<T: ?Sized>(t: &T) {} // to this (implicit in Rust)
 }
