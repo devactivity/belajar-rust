@@ -1,86 +1,40 @@
-// Using the Newtype Pattern for Type Safety and Abstraction
-// =========================================================
-use rust_advanced_features::People;
-
-fn main() {
-    let mut p = People::new();
-    p.add_name("RustLang");
-
-    println!("{:?}", p);
+// function pointers
+fn add_one(x: i32) -> i32 {
+    x + 1
 }
 
-// Creating Type Synonyms with Type Aliases
-// =========================================================
-fn main() {
-    type Kilometers = i32;
-
-    let x: i32 = 5;
-    let y: Kilometers = 5;
-
-    println!("x + y = {}", x + y);
-
-    type MyType = Box<dyn Fn() + Send + 'static>;
-
-    let f: MyType  = Box::new(|| println!("tes"));
-
-    fn takes_long_type(f: MyType) {}
-
-    fn returns_long_type() -> MyType {
-        Box::new(|| ())
-    }
-
-
-    use std::fmt;
-
-    type Result<T> = std::result::Result<T, std::io::Error>;
-
-    pub trait Write {
-        fn write(&mut self, buf: &[u8]) -> Result<usize>;
-        fn flush(&mut self) -> Result<()>;
-
-        fn write_all(&mut self, buf: &[u8]) -> Result<()>;
-        fn write_fmt(&mut self, fmt: fmt::Arguments) -> Result<()>;
-    }
-
-
-}
-
-// The Never Type that Never Returns
-// =========================================================
-fn bar() -> ! { // diverging function
-    panic!();
-}
-
-enum Option<T> {
-    Some(T),
-    None,
-}
-
-use crate::Option::*;
-
-impl<T> Option<T> {
-    pub fn unwrap(self) -> T {
-        match self {
-            Some(val) => val,
-            None => panic!("calledd Option::unwrap() on a None value")
-        }
-    }
+fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
+    f(arg) + f(arg)
 }
 
 fn main() {
-    print!("forever");
-    loop {
-        print!("infinite");
-        break;
+    let answer = do_twice(add_one, 5);
+
+    println!("The answer is: {}", answer);
+
+    let nums = vec![1, 2, 3];
+    let _num_str: Vec<String> = nums.iter().map(| i | i.to_string()).collect();
+    let _num_str2: Vec<String> = nums.iter().map(ToString::to_string).collect();
+
+    enum Status {
+        Value(u32),
+        Stop
     }
+
+    let _statuses: Vec<Status> = (0_u32..10).map(Status::Value).collect();
 }
 
-// Dynamically Sized Types and the Sized Trait
-// =========================================================
-fn main() {
-    let s1: &str = "hello world";
-    let s2: &str = "hello rust";
+// returning closures
+fn main() {}
 
-    fn generic<T>(t: T) {} // from this
-    fn generic<T: ?Sized>(t: &T) {} // to this (implicit in Rust)
+fn returns_closure() -> dyn Fn(i32) -> i32 {
+    | x | x + 1
+}
+
+fn returns_closure(y: i32) -> Box<dyn Fn(i32) -> i32> {
+    if y > 0 {
+        Box::new(move | x | y + x)
+    } else {
+        Box::new(move | x | y - x)
+    }
 }
