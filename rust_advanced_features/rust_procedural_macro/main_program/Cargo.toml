@@ -1,0 +1,12 @@
+[package]
+name = "main_program"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+our_library = { path = "../our_library" }
+macro_derive = { path = "../macro_derive" }
+macro_attribute_like = { path = "../macro_attribute_like" }
+macro_function_like = { path = "../macro_function_like" }
